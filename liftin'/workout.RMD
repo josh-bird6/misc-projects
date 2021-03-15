@@ -1,0 +1,182 @@
+---
+title: "A Year at the Gym"
+output: pdf_document
+---
+
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = T)
+
+library(tidyverse)
+library(lubridate)
+library(treemapify)
+
+basedata <- read.csv("liftin'.csv") %>% 
+  select(date, day, workout, weight) %>% 
+  mutate(date2 = dmy(date),
+         year = year(date2),
+         month = month(date2),
+         day2 = day(date2)) %>%  
+  select(date2, day2, month, year, day, workout, weight)
+```
+
+## Introduction
+
+On 30 July 2018 I took up a role as an analyst at the Scottish Funding Council. Coming from a predominantly policy background it would be by far the most quantitative job I'd ever had, so in the weeks leading up to my start date I began considering ways to inculcate a sort of data approach in my day-to-day. It was difficult to think of anything I did on the regular that was actually feasible to track (i.e. noodling on the guitar was pretty much out), and to be honest I don't remember how the idea came to me but eventually I decided to monitor my gym attendance. Now that a calendar year has elapsed, I thought I would celebrate my SFC birthday by sharing the results with you!
+
+## Methods
+
+The day I walked into the SFC for the first time coincided with the beginning of the data collection process; following each visit to the gym I would note in a single spreadsheet on my phone the date, day and workout of that particular session. Shortly thereafter I began weighing myself every Friday. Because a good portion of my physical activity takes place out with the gym I expanded the study's remit to include all the times I did a proper workout. The final base dataset ended up looking like this, with new lines added as I completed each subsequent workout:
+
+```{r, include=T, echo=F}
+read.csv("liftin'.csv") %>% 
+  select(-boo, -boo.1, -boo.2) %>% 
+  head(n=20)
+```
+
+This proved a relatively simple yet thorough means by which I could draw meaningful conclusions from the data, and I used this source to generate all the following figures. Overall I would say that that the main goal of this whole exercise was to gain a better understanding of my time spent working rather than an overarching desire to be more 'fit'.
+
+\clearpage
+
+## Results
+
+### By month
+In the 365 days of this study period I exercised a grand total of 218 times (59.7%). Breaking these figures down by month, these sums ranged from a high of 24 workouts in October 2018 to just 9 in December 2018, for an average of 18.16 workouts per month (Fig.1). My two big holidays in the study period, coming to Washington for Christmas and for the wedding, are clearly reflected in the data as December and May had my lowest _full_ month workout totals. 
+
+
+```{r, echo=FALSE}
+test <- basedata %>% 
+  unite_("monthyear", sep="-", c("month", "year")) %>% 
+  mutate(monthyear = as.factor(monthyear)) %>% 
+  group_by(monthyear, workout) %>% 
+  summarise(total = n())
+  
+test$monthyear <-
+  factor(
+    test$monthyear,
+    levels = c(
+      "7-2018",
+      "8-2018",
+      "9-2018",
+      "10-2018",
+      "11-2018",
+      "12-2018",
+      "1-2019",
+      "2-2019",
+      "3-2019",
+      "4-2019",
+      "5-2019",
+      "6-2019",
+      "7-2019"
+    )
+  )
+
+####################PROBABLY THE FIRST 
+ggplot(data = test, aes(x = monthyear, y = total)) +
+  geom_col(fill = "#9ecae1") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Figure 1: Number of workouts by month", x = "Month", y="Total") 
+```
+
+Overall the data shows a clear decrease in workout levels throughout the year. Whilst I don't think this was necessarily driven by a lack of will to exercise, I would need to cross reference these figures with my diary and also weather patterns to see if this downturn was chiefly  driven by extenuating circumstances or simply my own laziness...
+
+### By day
+
+Looking at the data by day reveals an interesting pattern (Fig.2). Monday and Tuesday were tied for 39 workouts each, followed closely by Friday and Sunday with 35 and 34 respectively. Conversely, Saturday was by far my most frequent day of rest with just 13 workouts over the year's 52 weeks. 
+
+I think my propensity for gyming in this fashion was at least in part driven by the guilt of my shameless weekend bingeing patterns, i.e. Friday and Saturday I'd hit the snacks and booze pretty hard but then Sunday through Tuesday I would hit the cardio even harder. By mid-week the stresses of the early reveille and workouts would have taken their toll, hence Wednesday's low weekday figure. But then I'd pick it up again, with my rather high Friday totals suggesting a sort of preemptive penance for the abuse I was to put my body through on the Sabbath, only to then bust ass again come Sunday. And so on. Perhaps not entirely healthy as such, but I take solace in the fact that my workout cycle generally bookended the bad behaviour with the good!
+
+```{r, echo=F}
+dayz <- basedata %>% 
+  group_by(day) %>% 
+  summarise(total = n())
+
+# dayz$day <-
+#   factor(
+#     dayz$day,
+#     levels = c(
+#       " Monday",
+#       " Tuesday",
+#       " Wednesday",
+#       " Thursday",
+#       " Friday",
+#       " Saturday",
+#       " Sunday"
+#     )
+#   )
+
+dayz$day <-
+  factor(
+    dayz$day,
+    levels = c(
+      " Sunday",
+      " Saturday",
+      " Friday",
+      " Thursday",
+      " Wednesday",
+      " Tuesday", 
+      " Monday"
+    )
+  )
+
+ggplot(data = dayz, aes(x = day, y = total)) +
+  geom_col(fill = "#9ecae1") +
+  theme_minimal() +
+  geom_text(aes(label = total), hjust=1) +
+  labs(title = "Figure 2: Workout totals by day", x="", y="Total") +
+  coord_flip()
+
+
+```
+
+
+### By type
+This sanctimonious screed raises the question, what did I do with myself for all those months and days? I didn't follow a hard and fast routine or programme but my workout selection generally depended on several factors, chief among which were what I had done the day previously, what the weather was like (I tended to go outside when possible, given the frequently-inclement weather) and above all how I felt. Generally I tried to follow a balanced plan of free weights and cardiovascular activity because I'm not so keen on becoming one of these gym-rat types but conversely I'd like to build up some meaningful muscle mass. Overall I was quite pleased to see how closely the results reflected this (Fig.3; I dig unconventional visualisations, and this one is called a treemap - much more interesting than your standard bar chart!): Of the year's 218 total sessions, my most frequent physical activities were running and back weights at 43 each - in other words these two routines accounted for 39.4% or nearly two out of five workouts this past year. 
+
+The remaining physical activity was a mishmash of different muscle groups, although you'll notice that one group is conspicuously absent. I did not do a single leg day over the past year but I'll have you know that this was not just because it is by far the consensus worst muscle group to train (which it is). First my right knee grumbles whenever I do any kind of the heavy compound lifting characteristic of leg day - think squats, leg press, etc. I also found that this type of high intensity interval training impeded my running performance, and because cardiovascular endurance is substantially more important to me than being able to do 100 dumbbell lunges or something I predict this trend will continue.
+
+```{r, echo=F}
+basedata %>% 
+  group_by(workout) %>% 
+  summarise(Total = n()) %>% 
+  mutate(totals= sum(Total),
+         overall_total = as.numeric(str_sub(Total/totals*100, 1,4))) %>% 
+  ggplot(aes(area=overall_total, fill = overall_total, label = workout, subgroup = paste0(Total, 
+                                                                                          paste0('(',overall_total,'%',')')))) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre") +
+  geom_treemap_subgroup_text(place = "topleft", colour = "white", fontface = "italic", size = 9) +
+  guides(fill=F) +
+  labs(title = "Figure 3: Workout totals by type")
+```
+
+
+### Weight
+
+As mentioned I commenced weighing myself every Friday rather early in this regimen. Because my dietary habits throughout the weekdays are decent I chose to do this at the end of the week in the hopes that it would more closely reflect my actual weight rather than the artificially inflated-figure it would no doubt be on Monday morning. I also made sure to use the same scale at the same time to ensure that the data collection would be consistent, hence some missing data at times when my machine was inaccessible.
+
+Despite the beginning and ending weights being almost identical - 77.8kg in August 2018 and 77.5kg in July 2019 - the data shows some fluctuations throughout the year. These are most pronounced in January and May 2019, although it is certainly no surprise whatsoever that these spikes occurred in the immediate aftermath of my two visits home - no qualms about correlation and causation here (Christmas and weddings make for good eats!).  Nevertheless the range remained between 75kg and 80kg, and the trend line demonstrates a clear decrease throughout the year. Of this I am pleased.
+
+```{r, echo=F, warning=F}
+ggplot(data = basedata, aes(x=date2, y=weight)) +
+  geom_point(fill = "#9ecae1") + 
+  geom_smooth(method = "lm", se=F, color = "#9ecae1") +
+  theme_minimal() +
+  scale_x_date(date_labels="%b %y", date_breaks ="1 month") +
+  scale_y_continuous(limits = c(75, 80)) +
+  labs(y="Weight(kg)", x = "Month", title = "Figure 4: Weight by month")
+
+
+```
+
+
+
+## Discussion
+It is important to note this study had several limitations. First, due to my corporate dronehood this fitness regime was essentially restricted non-working hours. Post-work is a non-starter because night workouts generally suck after a long day at the office, so the vast majority of these workouts (save for the weekends and the odd lunchtime run) took place before 9am. You'll further be aware that my primary means of getting around is via bicycle, which is hands down the fastest way to get to the gym in the morning but also much more exposed to the elements - in other words my gym-going in particular was subject to the capricious whims of Edinburgh's climate. 
+
+Besides external factors I would say that there was an element of cognitive bias here (Sophie you'll have to help me with what it actually is... I wanna say the Hawthorne effect but that may well be incorrect). Because I was systematically monitoring my physical activity I realised as time went on that I was actively making more of an effort to work out than I otherwise probably would have, so that I could add new data points. A positive effect sure, but an effect nonetheless.
+
+As mentioned I didn't really have a goal other than to better understand my workout patterns, but I didn't realise the extent to which monitoring my physical activity in this way would reveal insights about how they impacted my fitness levels and weight. It would have certainly been interesting to keep better track of my dietary habits as well but this would be even more susceptible to bias but more importantly would substantially complicate data collection. I've read about folk who carry around wee scales to measure the caloric, protein and fat content of any morsel of food they consume and then note it in a little pad. Would provide an even richer dataset but ain't nobody got time for that.
+
+Overall it was fun.
