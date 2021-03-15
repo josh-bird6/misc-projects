@@ -1,2 +1,2 @@
-# misc-projects
-Random projects that don't really fit anywhere else
+# Miscellaneous projects
+Random projects and pieces of work that don't really fit anywhere else. Comprises various analytical and visualisation techniques
