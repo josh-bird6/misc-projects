@@ -15,7 +15,7 @@ basedata$overall_electoral <- basedata_electoral$overall_electoral[(match(baseda
 
 #Getting popular vote percentages and using that to determine actual 
 
-basedata_finalised <- basedata %>% 
+basedata_finalised <- basedata %>%  
   mutate(Trump_popular_percent = round(Trump_popular/TOTAL_POP_VOTE, 10),
          Clinton_popular_percent = round(Clinton_popular/TOTAL_POP_VOTE, 10),
          Other_popular_percent = round(Others_popular/TOTAL_POP_VOTE, 10),
