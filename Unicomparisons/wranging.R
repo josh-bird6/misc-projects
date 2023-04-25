@@ -6,11 +6,15 @@ library(tidyverse)
 
 # F12 -> network -> fetch/xhr
 
-response <- GET("https://www.topuniversities.com/sites/default/files/qs-rankings-data/en/3816281.txt?rtnxp1")
+#grabbing text file from Fetch/XHR settings in Network 
+basetextfile <- GET("https://www.topuniversities.com/sites/default/files/qs-rankings-data/en/3816281.txt?rtnxp1")
 
-data_json <- content(response, encoding = "UTF-8")
+#extracting content in JSON format 
+data_json <- content(basetextfile, encoding = "UTF-8")
 
+#converting to Rformat
 dataframe <- jsonlite::fromJSON(data_json)
 
-df <- data.frame(dataframe) %>% 
-  filter(data.country == "United States")
+#BASE DATASET
+basedata <- data.frame(dataframe)
+#################################################
