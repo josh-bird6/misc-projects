@@ -14,7 +14,7 @@ library(sf)
   left_join(us_unis, by="state") %>% 
   tm_shape()+
   tm_polygons("rank",
-              breaks = c(0,10,50,100,500,1000,1400),
+              breaks = c(0,11,51,101,501,1001,1400),
               labels = c("1-10","11-50","51-100","101-500","501-1,000","1,001 and over"),
               title = "Placement in world \nuniversity ranking") +
   tm_layout(legend.outside=T,
@@ -38,7 +38,6 @@ test2 <- us_unis %>%
        caption = "*Note: No universities from Maine, Nevada, North Dakota or South Dakota were included in the rankings \nUniversities placed 500 and lower are ranked in bands rather than individually") +
   scale_y_continuous(limits = c(0, 1450), expand = c(0, 0),
                      labels = scales::comma) +
-  # scale_fill_gradient(low="#ffffd4", high = "#993404") +
   scale_fill_manual(values = c("#ffffd4", "#993404","#fe9929","#fee391" ,"#d95f0e", "#fec44f")) +
   theme(legend.position = "none",
         plot.caption = element_text(size = 15, hjust = 0),

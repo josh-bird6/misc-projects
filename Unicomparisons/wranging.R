@@ -79,7 +79,7 @@ us_unis <- basedata %>%
   mutate(rank = case_when(str_detect(data.rank_display, "-")~str_sub(data.rank_display, 1,3), 
                           T~data.rank_display),
          rank = as.numeric(rank),
-         rank = case_when(state %in% c("Arkansas", "Montana", "West Virginia")~rank+900,
+         rank = case_when(state %in% c("Arkansas", "Montana", "West Virginia")~rank+901,
                           T~rank),
          data.rank_display = case_when(str_detect(data.rank_display, "1000")~"801-1,000",
                                        str_detect(data.rank_display, "1001")~"1,001-1,200",
