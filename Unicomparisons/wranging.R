@@ -23,14 +23,7 @@ basedata <- data.frame(dataframe)
 
 #pulling in city/state deets from: #https://public.opendatasoft.com/explore/dataset/us-colleges-and-universities/export/
 
-# stateinfo <- read_csv("data/worldcities.csv") %>% 
-#   mutate(state = admin_name,
-#          data.city = case_when(city_ascii == "New York"~"New York City", 
-#                                T~city_ascii)) %>% 
-#   filter(country == "United States") %>% 
-#   select(5,12,13)
-
-
+##UNI AND CITY NAMES ARE INCREDIBLY FUSSY
 
 citystate_info <- read_csv("data/us_unis.csv") %>% 
   filter(NAICS_DESC == "COLLEGES, UNIVERSITIES, AND PROFESSIONAL SCHOOLS") %>% 
@@ -88,11 +81,16 @@ us_unis <- basedata %>%
          rank = as.numeric(rank),
          rank = case_when(state %in% c("Arkansas", "Montana", "West Virginia")~rank+900,
                           T~rank),
-         group = case_when(rank >0 & rank<11~"1-10",
-                           rank >10 & rank<51~"11-50",
-                           rank >50 & rank<101~"51-100",
-                           rank >100 &rank<501~"101-500",
-                           rank >500 & rank<1000~"501-1,000",
+         data.rank_display = case_when(str_detect(data.rank_display, "1000")~"801-1,000",
+                                       str_detect(data.rank_display, "1001")~"1,001-1,200",
+                                       T~data.rank_display),
+         group = case_when(rank>0&rank<11~ "1-10",
+                           rank>10&rank<51~"11-50",
+                           rank>50&rank<101~"51-100",
+                           rank>100&rank<501~"101-500",
+                           rank>500&rank<999~"501-1,000",
                            T~"1,001 and over"))
 
 #########################################
+
+
