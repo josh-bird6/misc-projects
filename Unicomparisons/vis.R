@@ -4,9 +4,11 @@ library(tmap)
 library(sf)
 
 ##MAP
+#zooming in
  US_shapefile <- read_sf("data/US_shapefile/cb_2018_us_state_5m.shp") %>% 
   tigris::shift_geometry()
 
+ 
  test1<-tmap_grob(US_shapefile %>% 
   filter(STATEFP<60) %>% 
   mutate(state= case_when(NAME == "District of Columbia"~"Washington D.C.",
